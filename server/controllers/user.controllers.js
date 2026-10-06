@@ -108,3 +108,25 @@ export async function loginUser(req, res, next) {
     return next(error);
   }
 }
+
+export async function getCurrentUser(req, res) {
+  return res.status(200).json({
+    success: true,
+    user: sanitizeUser(req.user),
+  });
+}
+
+export async function logoutUser(req, res) {
+  const cookieOptions = {
+    httpOnly: true,
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: process.env.NODE_ENV === "production",
+  };
+
+  res.clearCookie("token", cookieOptions);
+
+  return res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
+  });
+}
