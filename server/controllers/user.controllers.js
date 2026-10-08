@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import User from "../model/user.model.js";
-import generateToken from "../utils/genToken.js";
+import generateToken, { getCookieOptions } from "../utils/genToken.js";
 
 function sanitizeUser(user) {
   const plainUser = user.toObject ? user.toObject() : { ...user };
@@ -90,12 +90,7 @@ export async function loginUser(req, res, next) {
     }
 
     const token = generateToken(user._id);
-    const cookieOptions = {
-      httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production",
-    };
+    const cookieOptions = getCookieOptions();
 
     res.cookie("token", token, cookieOptions);
 
@@ -117,11 +112,7 @@ export async function getCurrentUser(req, res) {
 }
 
 export async function logoutUser(req, res) {
-  const cookieOptions = {
-    httpOnly: true,
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    secure: process.env.NODE_ENV === "production",
-  };
+  const cookieOptions = getCookieOptions();
 
   res.clearCookie("token", cookieOptions);
 
