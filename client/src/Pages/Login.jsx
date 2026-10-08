@@ -14,7 +14,7 @@ export default function Login() {
   const location = useLocation();
   const { setUser } = useAuth();
   const [form, setForm] = useState(initialForm);
-  const [error, setError] = useState(location.state?.message || "");
+  const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (event) => {
