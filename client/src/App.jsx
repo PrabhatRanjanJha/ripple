@@ -2,19 +2,9 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
+import Home from "./Pages/Home";
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
-
-function HomePlaceholder() {
-  return (
-    <div className="mx-auto max-w-4xl p-6">
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h1 className="text-2xl font-bold text-slate-900">Welcome to Ripple</h1>
-        <p className="mt-2 text-slate-600">Your project planner is ready.</p>
-      </div>
-    </div>
-  );
-}
 
 function ProjectsPlaceholder() {
   return (
@@ -53,7 +43,7 @@ export default function App() {
           path="/home"
           element={
             <ProtectedRoute>
-              <HomePlaceholder />
+              <Home />
             </ProtectedRoute>
           }
         />
