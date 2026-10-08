@@ -10,6 +10,11 @@ const app = express();
 const isTest = process.argv.includes("--test");
 const port = Number(process.env.PORT || 5000);
 const testPort = Number(process.env.TEST_PORT || 5055);
+const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+const corsOptions = {
+  origin: clientUrl,
+  credentials: true,
+};
 const mongoUri = isTest
   ? process.env.MONGO_URI_TEST || "mongodb://127.0.0.1:27017/ripple_test"
   : process.env.MONGO_URI || "mongodb://127.0.0.1:27017/ripple";
@@ -20,12 +25,8 @@ if (isTest) {
   }
 }
 
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
-    credentials: true,
-  }),
-);
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
