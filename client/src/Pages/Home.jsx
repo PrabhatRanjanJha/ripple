@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../axiosCalls/axios";
 import { useAuth } from "../context/AuthContext";
 
@@ -66,6 +66,12 @@ export default function Home() {
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-600">Dashboard</p>
         <h1 className="mt-3 text-3xl font-bold text-slate-900">Welcome back, {user.fullName}</h1>
         <p className="mt-2 text-slate-600">Your projects and schedules are ready to review.</p>
+        <Link
+          to="/projects"
+          className="mt-5 inline-flex rounded-lg bg-sky-600 px-4 py-2.5 font-medium text-white transition hover:bg-sky-500"
+        >
+          View projects
+        </Link>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">

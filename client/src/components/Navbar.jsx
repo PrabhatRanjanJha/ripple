@@ -33,6 +33,9 @@ export default function Navbar() {
               <Link to="/projects" className="hover:text-slate-900">
                 Projects
               </Link>
+              <Link to="/projects/new" className="hover:text-slate-900">
+                New project
+              </Link>
               <button
                 type="button"
                 onClick={handleLogout}

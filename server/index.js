@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import errorMiddleware from "./middlewares/error.middleware.js";
+import projectRoutes from "./routes/project.routes.js";
 import userRoutes from "./routes/user.routes.js";
 
 const app = express();
@@ -30,6 +31,7 @@ app.options("*", cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
+app.use("/projects", projectRoutes);
 app.use("/users", userRoutes);
 
 app.get("/health", (_req, res) => {
