@@ -1,4 +1,5 @@
 import Project from "../model/project.model.js";
+import Task from "../model/task.model.js";
 
 const projectFields = ["title", "description", "startDate", "deadline"];
 
@@ -100,7 +101,17 @@ export async function createProject(req, res, next) {
 export async function listProjects(req, res, next) {
   try {
     const projects = await Project.find({ owner: req.user._id }).sort({ createdAt: -1 });
-    return res.status(200).json({ success: true, projects });
+    const projectIds = projects.map((project) => project._id);
+    const taskCounts = await Task.aggregate([
+      { $match: { project: { $in: projectIds } } },
+      { $group: { _id: "$project", count: { $sum: 1 } } },
+    ]);
+    const countByProject = new Map(taskCounts.map(({ _id, count }) => [String(_id), count]));
+    const projectsWithCounts = projects.map((project) => ({
+      ...project.toObject(),
+      taskCount: countByProject.get(String(project._id)) || 0,
+    }));
+    return res.status(200).json({ success: true, projects: projectsWithCounts });
   } catch (error) {
     return next(error);
   }
@@ -161,11 +172,13 @@ export async function deleteProject(req, res, next) {
       return badRequest(res, "Invalid project id");
     }
 
-    const project = await Project.findOneAndDelete({ _id: req.params.id, owner: req.user._id });
+    const project = await Project.findOne({ _id: req.params.id, owner: req.user._id });
     if (!project) {
       return res.status(404).json({ success: false, message: "Project not found" });
     }
 
+    await Task.deleteMany({ project: project._id });
+    await project.deleteOne();
     return res.status(200).json({ success: true, message: "Project deleted successfully" });
   } catch (error) {
     return next(error);

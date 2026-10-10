@@ -117,8 +117,15 @@ export default function Projects() {
         <div className="grid gap-4 md:grid-cols-2">
           {projects.map((project) => (
             <article key={project._id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-              <h2 className="break-words text-xl font-bold text-slate-900">{project.title}</h2>
+              <h2 className="break-words text-xl font-bold text-slate-900">
+                <Link to={`/projects/${project._id}`} className="hover:text-sky-700">
+                  {project.title}
+                </Link>
+              </h2>
               {project.description && <p className="mt-2 whitespace-pre-wrap text-sm text-slate-600">{project.description}</p>}
+              <p className="mt-3 text-sm font-medium text-slate-600">
+                {project.taskCount ?? 0} {project.taskCount === 1 ? "task" : "tasks"}
+              </p>
               <dl className="mt-5 grid grid-cols-2 gap-3 text-sm">
                 <div>
                   <dt className="font-medium text-slate-500">Start date</dt>
@@ -130,6 +137,12 @@ export default function Projects() {
                 </div>
               </dl>
               <div className="mt-5 flex gap-3 border-t border-slate-100 pt-4">
+                <Link
+                  to={`/projects/${project._id}`}
+                  className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium text-white hover:bg-sky-500"
+                >
+                  Open
+                </Link>
                 <Link
                   to={`/projects/${project._id}/edit`}
                   className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"

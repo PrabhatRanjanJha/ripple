@@ -5,6 +5,7 @@ import PublicRoute from "./components/PublicRoute";
 import Home from "./Pages/Home";
 import Login from "./Pages/Login";
 import ProjectForm from "./Pages/ProjectForm";
+import ProjectDetail from "./Pages/ProjectDetail";
 import Projects from "./Pages/Projects";
 import Register from "./Pages/Register";
 
@@ -43,6 +44,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Projects />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/projects/:id"
+          element={
+            <ProtectedRoute>
+              <ProjectDetail />
             </ProtectedRoute>
           }
         />

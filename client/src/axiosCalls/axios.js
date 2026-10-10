@@ -32,4 +32,24 @@ export async function deleteProject(id) {
   return response.data;
 }
 
+export async function fetchTasks(projectId) {
+  const response = await api.get(`/projects/${projectId}/tasks`);
+  return response.data.tasks;
+}
+
+export async function createTask(projectId, task) {
+  const response = await api.post(`/projects/${projectId}/tasks`, task);
+  return response.data.task;
+}
+
+export async function updateTask(id, task) {
+  const response = await api.patch(`/tasks/${id}`, task);
+  return response.data.task;
+}
+
+export async function deleteTask(id) {
+  const response = await api.delete(`/tasks/${id}`);
+  return response.data;
+}
+
 export default api;
