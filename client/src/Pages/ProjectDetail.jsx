@@ -26,6 +26,12 @@ function statusClass(status) {
   }[status] || "bg-slate-100 text-slate-700";
 }
 
+function dependencyTitles(task, tasks) {
+  return (task.dependsOn || [])
+    .map((id) => tasks.find((item) => item._id === id)?.title)
+    .filter(Boolean);
+}
+
 export default function ProjectDetail() {
   const { id } = useParams();
   const [project, setProject] = useState(null);
@@ -86,7 +92,14 @@ export default function ProjectDetail() {
     setError("");
     try {
       await deleteTask(taskToDelete._id);
-      setTasks((current) => current.filter((task) => task._id !== taskToDelete._id));
+      setTasks((current) =>
+        current
+          .filter((task) => task._id !== taskToDelete._id)
+          .map((task) => ({
+            ...task,
+            dependsOn: (task.dependsOn || []).filter((dependencyId) => dependencyId !== taskToDelete._id),
+          })),
+      );
       setTaskToDelete(null);
       if (editingTask?._id === taskToDelete._id) {
         setEditingTask(null);
@@ -222,6 +235,7 @@ export default function ProjectDetail() {
             <TaskForm
               key={editingTask?._id || "new-task"}
               task={editingTask}
+              tasks={tasks}
               error={taskError}
               saving={saving}
               onSave={handleSave}
@@ -242,6 +256,7 @@ export default function ProjectDetail() {
                 <tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500">
                   <th scope="col" className="px-3 py-3 font-semibold">Task</th>
                   <th scope="col" className="px-3 py-3 font-semibold">Duration</th>
+                  <th scope="col" className="px-3 py-3 font-semibold">Depends on</th>
                   <th scope="col" className="px-3 py-3 font-semibold">Status</th>
                   <th scope="col" className="px-3 py-3 font-semibold">Notes</th>
                   <th scope="col" className="px-3 py-3 font-semibold">Actions</th>
@@ -254,6 +269,19 @@ export default function ProjectDetail() {
                       {task.title}
                     </th>
                     <td className="whitespace-nowrap px-3 py-4 text-slate-700">{task.durationDays} days</td>
+                    <td className="max-w-56 px-3 py-4">
+                      {dependencyTitles(task, tasks).length === 0 ? (
+                        <span className="text-slate-400">None</span>
+                      ) : (
+                        <div className="flex flex-wrap gap-1">
+                          {dependencyTitles(task, tasks).map((title, index) => (
+                            <span key={`${title}-${index}`} className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+                              {title}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </td>
                     <td className="px-3 py-4">
                       <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${statusClass(task.status)}`}>
                         {statusLabel(task.status)}
