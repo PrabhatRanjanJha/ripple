@@ -6,6 +6,7 @@ import {
   listTasks,
   updateTask,
 } from "../controllers/task.controllers.js";
+import { getSchedule } from "../controllers/schedule.controllers.js";
 
 const router = express.Router();
 
@@ -15,5 +16,6 @@ router.route("/projects/:projectId/tasks")
 router.route("/tasks/:id")
   .patch(authMiddleware, updateTask)
   .delete(authMiddleware, deleteTask);
+router.get("/projects/:id/schedule", authMiddleware, getSchedule);
 
 export default router;
