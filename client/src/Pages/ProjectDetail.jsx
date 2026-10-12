@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import StatusMessage from "../components/StatusMessage";
 import TaskForm from "../components/TaskForm";
 import ScheduleTable from "../components/ScheduleTable";
+import GanttChart from "../components/GanttChart";
 import {
   createTask,
   deleteTask,
@@ -328,6 +329,7 @@ export default function ProjectDetail() {
         )}
       </section>
       <ScheduleTable schedule={schedule} />
+      <GanttChart schedule={schedule} />
     </main>
   );
 }
