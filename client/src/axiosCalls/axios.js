@@ -52,4 +52,9 @@ export async function deleteTask(id) {
   return response.data;
 }
 
+export async function fetchSchedule(projectId) {
+  const response = await api.get(`/projects/${projectId}/schedule`);
+  return response.data.schedule;
+}
+
 export default api;

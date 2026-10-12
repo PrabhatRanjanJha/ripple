@@ -2,10 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import StatusMessage from "../components/StatusMessage";
 import TaskForm from "../components/TaskForm";
+import ScheduleTable from "../components/ScheduleTable";
 import {
   createTask,
   deleteTask,
   fetchProject,
+  fetchSchedule,
   fetchTasks,
   updateTask,
 } from "../axiosCalls/axios";
@@ -44,6 +46,7 @@ export default function ProjectDetail() {
   const [saving, setSaving] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [schedule, setSchedule] = useState(null);
 
   const loadProject = useCallback(async () => {
     setLoading(true);
@@ -62,6 +65,15 @@ export default function ProjectDetail() {
   useEffect(() => {
     loadProject();
   }, [loadProject]);
+
+  useEffect(() => {
+    if (loading) {
+      return;
+    }
+    fetchSchedule(id)
+      .then((data) => setSchedule(data))
+      .catch(() => setSchedule(null));
+  }, [tasks, id, loading]);
 
   const handleSave = async (taskData) => {
     setSaving(true);
@@ -315,6 +327,7 @@ export default function ProjectDetail() {
           </div>
         )}
       </section>
+      <ScheduleTable schedule={schedule} />
     </main>
   );
 }
