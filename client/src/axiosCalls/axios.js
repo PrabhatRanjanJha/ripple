@@ -57,4 +57,29 @@ export async function fetchSchedule(projectId) {
   return response.data.schedule;
 }
 
+export async function simulateSchedule(projectId, changes) {
+  const response = await api.post(`/projects/${projectId}/simulate`, { changes });
+  return response.data;
+}
+
+export async function fetchScenarios(projectId) {
+  const response = await api.get(`/projects/${projectId}/scenarios`);
+  return response.data.scenarios;
+}
+
+export async function createScenario(projectId, scenario) {
+  const response = await api.post(`/projects/${projectId}/scenarios`, scenario);
+  return response.data.scenario;
+}
+
+export async function runScenario(id) {
+  const response = await api.get(`/scenarios/${id}/run`);
+  return response.data;
+}
+
+export async function deleteScenario(id) {
+  const response = await api.delete(`/scenarios/${id}`);
+  return response.data;
+}
+
 export default api;

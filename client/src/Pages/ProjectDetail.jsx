@@ -4,6 +4,7 @@ import StatusMessage from "../components/StatusMessage";
 import TaskForm from "../components/TaskForm";
 import ScheduleTable from "../components/ScheduleTable";
 import GanttChart from "../components/GanttChart";
+import WhatIfPanel from "../components/WhatIfPanel";
 import {
   createTask,
   deleteTask,
@@ -48,6 +49,7 @@ export default function ProjectDetail() {
   const [taskToDelete, setTaskToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [schedule, setSchedule] = useState(null);
+  const [whatIf, setWhatIf] = useState(null);
 
   const loadProject = useCallback(async () => {
     setLoading(true);
@@ -71,6 +73,7 @@ export default function ProjectDetail() {
     if (loading) {
       return;
     }
+    setWhatIf(null);
     fetchSchedule(id)
       .then((data) => setSchedule(data))
       .catch(() => setSchedule(null));
@@ -329,7 +332,8 @@ export default function ProjectDetail() {
         )}
       </section>
       <ScheduleTable schedule={schedule} />
-      <GanttChart schedule={schedule} />
+      <WhatIfPanel projectId={id} tasks={tasks} result={whatIf} onResult={setWhatIf} />
+      <GanttChart schedule={whatIf ? whatIf.simulated : schedule} baseline={whatIf ? whatIf.baseline : null} />
     </main>
   );
 }

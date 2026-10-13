@@ -99,4 +99,47 @@ const computeSchedule = ({ tasks, startDate, deadline = null }) => {
     }
 }
 
-export { computeSchedule }
+const clampDuration = (days) => Math.min(365, Math.max(1, days))
+
+// run the schedule again with some durations changed, nothing is saved
+const simulate = ({ tasks, startDate, deadline = null, changes = [] }) => {
+    const baseline = computeSchedule({ tasks, startDate, deadline })
+
+    // add up the changes of each task, changes for unknown tasks are ignored
+    const deltas = new Map()
+    changes.forEach((change) => {
+        deltas.set(change.taskId, (deltas.get(change.taskId) || 0) + change.deltaDays)
+    })
+
+    const changedTasks = tasks.map((task) => ({
+        ...task,
+        durationDays: clampDuration(task.durationDays + (deltas.get(task.id) || 0)),
+    }))
+    const simulated = computeSchedule({ tasks: changedTasks, startDate, deadline })
+
+    // list the tasks that moved or changed between critical and not critical
+    const before = new Map(baseline.tasks.map((row) => [row.taskId, row]))
+    const moved = []
+    simulated.tasks.forEach((row) => {
+        const old = before.get(row.taskId)
+        const shiftDays = row.earliestFinish - old.earliestFinish
+        const becameCritical = row.critical && !old.critical
+        const leftCritical = !row.critical && old.critical
+        if (shiftDays !== 0 || becameCritical || leftCritical) {
+            moved.push({ taskId: row.taskId, title: row.title, shiftDays, becameCritical, leftCritical })
+        }
+    })
+
+    return {
+        baseline,
+        simulated,
+        diff: {
+            finishShiftDays: simulated.projectDuration - baseline.projectDuration,
+            deadlineStatusBefore: baseline.deadlineStatus,
+            deadlineStatusAfter: simulated.deadlineStatus,
+            tasks: moved,
+        },
+    }
+}
+
+export { computeSchedule, simulate }

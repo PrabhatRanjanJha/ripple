@@ -1,5 +1,6 @@
 import Project from "../model/project.model.js";
 import Task from "../model/task.model.js";
+import Scenario from "../model/scenario.model.js";
 
 const projectFields = ["title", "description", "startDate", "deadline"];
 
@@ -178,6 +179,7 @@ export async function deleteProject(req, res, next) {
     }
 
     await Task.deleteMany({ project: project._id });
+    await Scenario.deleteMany({ project: project._id });
     await project.deleteOne();
     return res.status(200).json({ success: true, message: "Project deleted successfully" });
   } catch (error) {
