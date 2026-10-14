@@ -1,13 +1,8 @@
 import { useEffect, useState } from 'react'
 import ScenarioList from './ScenarioList.jsx'
 import StatusMessage from './StatusMessage.jsx'
-import {
-  createScenario,
-  deleteScenario,
-  fetchScenarios,
-  runScenario,
-  simulateSchedule,
-} from '../axiosCalls/axios.js'
+import { createScenario, deleteScenario, fetchScenarios, runScenario } from '../axiosCalls/scenarioApi.js'
+import { simulateSchedule } from '../axiosCalls/scheduleApi.js'
 
 const emptyRow = { taskId: '', deltaDays: '1' }
 

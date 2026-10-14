@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import StatusMessage from "../components/StatusMessage";
-import { createProject, fetchProject, updateProject } from "../axiosCalls/axios";
+import { createProject, fetchProject, updateProject } from "../axiosCalls/projectApi";
 
 const emptyForm = {
   title: "",

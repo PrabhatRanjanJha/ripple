@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import StatusMessage from "../components/StatusMessage";
-import { deleteProject, fetchProjects } from "../axiosCalls/axios";
+import { deleteProject, fetchProjects } from "../axiosCalls/projectApi";
 
 function displayDate(value) {
   return value ? new Date(value).toLocaleDateString() : "Not set";

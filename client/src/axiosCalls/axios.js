@@ -1,85 +1,8 @@
-import axios from "axios";
-
-const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
+import axios from 'axios'
 
 const api = axios.create({
-  baseURL: apiUrl,
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
   withCredentials: true,
-});
+})
 
-export async function fetchProjects() {
-  const response = await api.get("/projects");
-  return response.data.projects;
-}
-
-export async function fetchProject(id) {
-  const response = await api.get(`/projects/${id}`);
-  return response.data.project;
-}
-
-export async function createProject(project) {
-  const response = await api.post("/projects", project);
-  return response.data.project;
-}
-
-export async function updateProject(id, project) {
-  const response = await api.patch(`/projects/${id}`, project);
-  return response.data.project;
-}
-
-export async function deleteProject(id) {
-  const response = await api.delete(`/projects/${id}`);
-  return response.data;
-}
-
-export async function fetchTasks(projectId) {
-  const response = await api.get(`/projects/${projectId}/tasks`);
-  return response.data.tasks;
-}
-
-export async function createTask(projectId, task) {
-  const response = await api.post(`/projects/${projectId}/tasks`, task);
-  return response.data.task;
-}
-
-export async function updateTask(id, task) {
-  const response = await api.patch(`/tasks/${id}`, task);
-  return response.data.task;
-}
-
-export async function deleteTask(id) {
-  const response = await api.delete(`/tasks/${id}`);
-  return response.data;
-}
-
-export async function fetchSchedule(projectId) {
-  const response = await api.get(`/projects/${projectId}/schedule`);
-  return response.data.schedule;
-}
-
-export async function simulateSchedule(projectId, changes) {
-  const response = await api.post(`/projects/${projectId}/simulate`, { changes });
-  return response.data;
-}
-
-export async function fetchScenarios(projectId) {
-  const response = await api.get(`/projects/${projectId}/scenarios`);
-  return response.data.scenarios;
-}
-
-export async function createScenario(projectId, scenario) {
-  const response = await api.post(`/projects/${projectId}/scenarios`, scenario);
-  return response.data.scenario;
-}
-
-export async function runScenario(id) {
-  const response = await api.get(`/scenarios/${id}/run`);
-  return response.data;
-}
-
-export async function deleteScenario(id) {
-  const response = await api.delete(`/scenarios/${id}`);
-  return response.data;
-}
-
-export default api;
+export default api

@@ -6,14 +6,9 @@ import ScheduleTable from "../components/ScheduleTable";
 import GanttChart from "../components/GanttChart";
 import ProgressBar from "../components/ProgressBar";
 import WhatIfPanel from "../components/WhatIfPanel";
-import {
-  createTask,
-  deleteTask,
-  fetchProject,
-  fetchSchedule,
-  fetchTasks,
-  updateTask,
-} from "../axiosCalls/axios";
+import { fetchProject } from "../axiosCalls/projectApi";
+import { createTask, deleteTask, fetchTasks, updateTask } from "../axiosCalls/taskApi";
+import { fetchSchedule } from "../axiosCalls/scheduleApi";
 
 function displayDate(value) {
   return value ? new Date(value).toLocaleDateString() : "Not set";

@@ -33,3 +33,31 @@ Ripple is a project planner. You add tasks with durations and dependencies, and 
 - `cd server && npm run smoke`
 - `cd server && node --test`
 - `cd client && npm run build`
+
+
+## API
+
+All routes except `/health`, `/users/register` and `/users/login` need the login cookie. Every response is JSON shaped `{ success, message, ... }`.
+
+| Method | Route | What it does |
+|---|---|---|
+| GET | `/health` | Server check |
+| POST | `/users/register` | Create an account |
+| POST | `/users/login` | Log in and set the HttpOnly cookie |
+| GET | `/users/me` | Get the logged in user |
+| POST | `/users/logout` | Log out and clear the cookie |
+| POST | `/projects` | Create a project |
+| GET | `/projects` | List your projects |
+| GET | `/projects/:id` | Get one project |
+| PATCH | `/projects/:id` | Update a project |
+| DELETE | `/projects/:id` | Delete a project with its tasks and scenarios |
+| POST | `/projects/:projectId/tasks` | Add a task, with optional dependencies |
+| GET | `/projects/:projectId/tasks` | List the tasks of a project |
+| PATCH | `/tasks/:id` | Update a task, rejects circular dependencies |
+| DELETE | `/tasks/:id` | Delete a task and remove it from other tasks' dependencies |
+| GET | `/projects/:id/schedule` | Schedule, critical path, deadline status and progress |
+| POST | `/projects/:id/simulate` | What-if run, nothing is saved |
+| POST | `/projects/:id/scenarios` | Save a what-if as a scenario |
+| GET | `/projects/:id/scenarios` | List saved scenarios |
+| GET | `/scenarios/:id/run` | Run a saved scenario |
+| DELETE | `/scenarios/:id` | Delete a scenario |
