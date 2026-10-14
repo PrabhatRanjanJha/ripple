@@ -1,80 +1,88 @@
 # Ripple
 
-Ripple is a project planner. You add tasks with durations and dependencies, and Ripple works out the schedule and the critical path, the chain of tasks that decides your finish date. A what-if simulator shows what happens to the finish date if a task slips, without touching your real plan.
+Ripple is a full-stack project planner and what-if simulator. You add tasks with durations and dependencies, and Ripple automatically computes the project schedule and the critical path—the vital chain of tasks that determines your final finish date. A built-in what-if simulator lets you test task slips and duration changes to see their impact instantly, without modifying your live plan.
 
-## Tech stack
+## Tech Stack
 
-- MongoDB, Express, React, Node.js (MERN)
-- Mongoose, JWT authentication with HttpOnly cookies, bcrypt
-- Tailwind CSS
+* **MongoDB, Express, React, Node.js (MERN)**
+* **Mongoose**, **JWT Authentication** with `HttpOnly` cookies, **bcrypt**
+* **Tailwind CSS**
 
-## Local development setup
+---
 
-1. Duplicate the environment files in both apps and adjust the values for your local machine:
-   - `server/.env.example` -> `server/.env`
-   - `client/.env.example` -> `client/.env`
-2. Start MongoDB locally and make sure the database URLs in `server/.env` point to a working database.
+## Local Development Setup
+
+1. Duplicate the environment configuration files in both apps and adjust the values for your local machine:
+   * `server/.env.example` $\rightarrow$ `server/.env`
+   * `client/.env.example` $\rightarrow$ `client/.env`
+2. Start MongoDB locally and ensure the database URLs in `server/.env` point to a working database instance.
 3. In `server/`, install dependencies and start the API:
-   - `npm install`
-   - `npm run dev`
+   * `npm install`
+   * `npm run dev`
 4. In `client/`, install dependencies and start Vite:
-   - `npm install`
-   - `npm run dev`
-5. Keep the frontend on `http://localhost:5173` and the backend on `http://localhost:5000` so the cookie and CORS settings line up with `CLIENT_URL` and `VITE_API_URL`.
+   * `npm install`
+   * `npm run dev`
+5. Keep the frontend running on `http://localhost:5173` and the backend on `http://localhost:5000` so that cookie and CORS settings line up seamlessly with `CLIENT_URL` and `VITE_API_URL`.
+
+---
 
 ## Authentication and CORS
 
-- The backend sets the JWT in an HttpOnly cookie named `token`.
-- Cookies are configured with `sameSite: "lax"` in development and `sameSite: "none"` with `secure: true` in production.
-- The server allows credentials only for the configured `CLIENT_URL` origin, so requests from the frontend keep their session while the browser remains on the Vite dev server.
+* The backend sets the authentication token inside an `HttpOnly` cookie named `token`.
+* Cookies are configured with `sameSite: "lax"` in development and `sameSite: "none"` with `secure: true` in production.
+* The server allows credentials only for the configured `CLIENT_URL` origin, ensuring requests from the frontend maintain their session securely.
 
-## Useful commands
+---
 
-- `cd server && npm run smoke`
-- `cd server && node --test`
-- `cd client && npm run build`
+## Useful Commands
 
+* `cd server && npm run smoke`
+* `cd server && node --test`
+* `cd client && npm run build`
 
-## API
+---
 
-All routes except `/health`, `/users/register` and `/users/login` need the login cookie. Every response is JSON shaped `{ success, message, ... }`.
+## API Reference
 
-| Method | Route | What it does |
-|---|---|---|
-| GET | `/health` | Server check |
-| POST | `/users/register` | Create an account |
-| POST | `/users/login` | Log in and set the HttpOnly cookie |
-| GET | `/users/me` | Get the logged in user |
-| POST | `/users/logout` | Log out and clear the cookie |
-| POST | `/projects` | Create a project |
-| GET | `/projects` | List your projects |
-| GET | `/projects/:id` | Get one project |
-| PATCH | `/projects/:id` | Update a project |
-| DELETE | `/projects/:id` | Delete a project with its tasks and scenarios |
-| POST | `/projects/:projectId/tasks` | Add a task, with optional dependencies |
-| GET | `/projects/:projectId/tasks` | List the tasks of a project |
-| PATCH | `/tasks/:id` | Update a task, rejects circular dependencies |
-| DELETE | `/tasks/:id` | Delete a task and remove it from other tasks' dependencies |
-| GET | `/projects/:id/schedule` | Schedule, critical path, deadline status and progress |
-| POST | `/projects/:id/simulate` | What-if run, nothing is saved |
-| POST | `/projects/:id/scenarios` | Save a what-if as a scenario |
-| GET | `/projects/:id/scenarios` | List saved scenarios |
-| GET | `/scenarios/:id/run` | Run a saved scenario |
-| DELETE | `/scenarios/:id` | Delete a scenario |
+All routes except `/health`, `/users/register`, and `/users/login` require authentication via the login cookie. Every response is returned as JSON shaped `{ success, message, ... }`.
 
+| Method | Route | Description |
+| :--- | :--- | :--- |
+| **GET** | `/health` | Server health check |
+| **POST** | `/users/register` | Create a new user account |
+| **POST** | `/users/login` | Log in and set the `HttpOnly` cookie |
+| **GET** | `/users/me` | Get currently logged-in user profile |
+| **POST** | `/users/logout` | Log out and clear authentication cookie |
+| **POST** | `/projects` | Create a new project |
+| **GET** | `/projects` | List all projects for the user |
+| **GET** | `/projects/:id` | Get a specific project by ID |
+| **PATCH** | `/projects/:id` | Update project details |
+| **DELETE** | `/projects/:id` | Delete a project along with its tasks and scenarios |
+| **POST** | `/projects/:projectId/tasks` | Add a task with optional dependencies |
+| **GET** | `/projects/:projectId/tasks` | List all tasks for a project |
+| **PATCH** | `/tasks/:id` | Update a task (automatically validates circular dependencies) |
+| **DELETE** | `/tasks/:id` | Delete a task and remove it from dependent chains |
+| **GET** | `/projects/:id/schedule` | Retrieve schedule, critical path, deadline status, and progress |
+| **POST** | `/projects/:id/simulate` | Run a what-if simulation (transient, nothing is saved) |
+| **POST** | `/projects/:id/scenarios` | Save a what-if simulation run as a named scenario |
+| **GET** | `/projects/:id/scenarios` | List saved scenarios for a project |
+| **GET** | `/scenarios/:id/run` | Execute a specific saved scenario |
+| **DELETE** | `/scenarios/:id` | Delete a scenario |
 
-## Deployment
+---
 
-The server runs on Render, the client on Vercel, and the data lives in MongoDB Atlas.
+## Deployment Guide
 
-1. **Atlas:** create a database user, and under Network Access allow `0.0.0.0/0` so the hosted server can connect. Copy the connection string and add a database name such as `ripple_live` before the `?`.
-2. **Render (server):** create a Web Service from this repository with these settings.
-   - Root directory: `server`
-   - Build command: `npm install`
-   - Start command: `npm start`
-   - Health check path: `/health`
-   - Environment variables: `MONGO_URI`, `JWT_SECRET` (a new long random string), `NODE_ENV=production`, `NODE_VERSION=22`, and `CLIENT_URL` (the Vercel address, added in step 4).
-3. **Vercel (client):** import this repository with root directory `client` and framework Vite. Add the variable `VITE_API_URL` set to the Render address, with no trailing slash, and deploy.
-4. **Connect them:** set `CLIENT_URL` on Render to the final Vercel address and redeploy the server.
+The server runs on Render, the client on Vercel, and persistent data lives on MongoDB Atlas.
 
-The login cookie is `HttpOnly`, and in production it is `Secure` with `SameSite=None`, so the client and server can sit on different domains. Browsers that block third-party cookies may stop the login from working on the live site.
+1. **Atlas:** Create a database user and configure Network Access to allow `0.0.0.0/0` so your hosted Render server can connect. Copy your connection string and append a custom database name (e.g., `ripple_live`) before the `?`.
+2. **Render (Server):** Create a Web Service from your repository with these settings:
+   * **Root Directory:** `server`
+   * **Build Command:** `npm install`
+   * **Start Command:** `npm start`
+   * **Health Check Path:** `/health`
+   * **Environment Variables:** `MONGO_URI`, `JWT_SECRET` (a strong random string), `NODE_ENV=production`, `NODE_VERSION=22`, and `CLIENT_URL` (your Vercel frontend domain).
+3. **Vercel (Client):** Import your repository with **Root Directory** set to `client` and framework preset set to **Vite**. Add the environment variable `VITE_API_URL` set to your Render backend address (with no trailing slash) and deploy.
+4. **Connect Them:** Ensure `CLIENT_URL` on Render matches your final Vercel frontend URL precisely, then trigger a redeploy of the server.
+
+> **Note on Cookies:** The production login cookie uses `Secure` and `SameSite=None` flags so the client and server can communicate seamlessly across different domains.
