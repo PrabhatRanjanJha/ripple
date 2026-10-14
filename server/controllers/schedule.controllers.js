@@ -1,6 +1,7 @@
 import Project from '../model/project.model.js'
 import { computeSchedule, simulate } from '../utils/scheduler.js'
 import { loadSchedulingData } from '../utils/projectData.js'
+import { formatDay } from '../utils/dates.js'
 import { checkChanges } from '../utils/changes.js'
 
 const isValidId = (id) => typeof id === 'string' && /^[a-f\d]{24}$/i.test(id)
@@ -25,7 +26,7 @@ const getSchedule = async (req, res) => {
         }
 
         const data = await loadSchedulingData(projectResult.project)
-        const schedule = computeSchedule(data)
+        const schedule = computeSchedule({ ...data, today: formatDay(new Date()) })
         return res.status(200).json({ success: true, schedule })
     }
     catch (err) {

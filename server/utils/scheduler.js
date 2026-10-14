@@ -2,7 +2,7 @@ import { topoSort } from './graph.js'
 import { parseDay, addDays, formatDay, daysBetween } from './dates.js'
 
 // work out the schedule and the critical path of a project
-const computeSchedule = ({ tasks, startDate, deadline = null }) => {
+const computeSchedule = ({ tasks, startDate, deadline = null, today = null }) => {
     const start = parseDay(startDate)
     const byId = new Map(tasks.map((task) => [task.id, task]))
 
@@ -87,6 +87,14 @@ const computeSchedule = ({ tasks, startDate, deadline = null }) => {
         deadlineStatus = daysFromDeadline > 0 ? 'late' : 'on_track'
     }
 
+    // progress: how much of the planned work is done and which tasks are late
+    const totalDays = tasks.reduce((sum, task) => sum + task.durationDays, 0)
+    const doneDays = tasks.reduce((sum, task) => sum + (task.status === 'done' ? task.durationDays : 0), 0)
+    const doneCount = tasks.filter((task) => task.status === 'done').length
+    const overdueTaskIds = today
+        ? rows.filter((row) => row.status !== 'done' && row.endDate < today).map((row) => row.taskId)
+        : []
+
     return {
         projectStart: formatDay(start),
         projectDuration,
@@ -96,6 +104,12 @@ const computeSchedule = ({ tasks, startDate, deadline = null }) => {
         daysFromDeadline,
         tasks: rows,
         criticalTaskIds: rows.filter((row) => row.critical).map((row) => row.taskId),
+        progress: {
+            percentDone: totalDays > 0 ? Math.round((doneDays / totalDays) * 100) : 0,
+            doneCount,
+            totalCount: tasks.length,
+            overdueTaskIds,
+        },
     }
 }
 

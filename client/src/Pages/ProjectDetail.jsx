@@ -4,6 +4,7 @@ import StatusMessage from "../components/StatusMessage";
 import TaskForm from "../components/TaskForm";
 import ScheduleTable from "../components/ScheduleTable";
 import GanttChart from "../components/GanttChart";
+import ProgressBar from "../components/ProgressBar";
 import WhatIfPanel from "../components/WhatIfPanel";
 import {
   createTask,
@@ -128,6 +129,18 @@ export default function ProjectDetail() {
     }
   };
 
+  const overdueIds = schedule?.progress?.overdueTaskIds || [];
+
+  const handleStatusChange = async (task, status) => {
+    setError("");
+    try {
+      const savedTask = await updateTask(task._id, { status });
+      setTasks((current) => current.map((item) => (item._id === savedTask._id ? savedTask : item)));
+    } catch (apiError) {
+      setError(apiError?.response?.data?.message || "Unable to update this task.");
+    }
+  };
+
   const startEditing = (task) => {
     setEditingTask(task);
     setTaskError("");
@@ -193,7 +206,7 @@ export default function ProjectDetail() {
           </div>
         </dl>
       </section>
-
+      {schedule && <ProgressBar progress={schedule.progress} />}
       <StatusMessage message={error} />
 
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
@@ -280,7 +293,7 @@ export default function ProjectDetail() {
               </thead>
               <tbody>
                 {tasks.map((task) => (
-                  <tr key={task._id} className="border-b border-slate-100 align-top last:border-0">
+                    <tr key={task._id} className={`border-b border-slate-100 align-top last:border-0 ${overdueIds.includes(task._id) ? "bg-rose-50" : ""}`}>
                     <th scope="row" className="max-w-56 break-words px-3 py-4 font-semibold text-slate-900">
                       {task.title}
                     </th>
@@ -302,6 +315,21 @@ export default function ProjectDetail() {
                       <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${statusClass(task.status)}`}>
                         {statusLabel(task.status)}
                       </span>
+                      <select
+                        value={task.status}
+                        onChange={(event) => handleStatusChange(task, event.target.value)}
+                        className="ml-2 rounded-md border border-slate-300 bg-white px-1.5 py-1 text-xs"
+                        aria-label={`Change status of ${task.title}`}
+                      >
+                        <option value="todo">To do</option>
+                        <option value="doing">In progress</option>
+                        <option value="done">Done</option>
+                      </select>
+                      {overdueIds.includes(task._id) && (
+                        <span className="ml-2 rounded-full bg-rose-100 px-2 py-0.5 text-xs font-semibold text-rose-800">
+                          Overdue
+                        </span>
+                      )}
                     </td>
                     <td className="max-w-64 whitespace-pre-wrap break-words px-3 py-4 text-slate-600">
                       {task.notes || "—"}
