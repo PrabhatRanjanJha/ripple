@@ -10,6 +10,10 @@ import taskRoutes from './routes/task.routes.js'
 import userRoutes from './routes/user.routes.js'
 
 const app = express()
+if (process.env.NODE_ENV === 'production') {
+    app.set('trust proxy', 1)
+}
+
 const isTest = process.argv.includes('--test')
 const port = Number(isTest ? process.env.TEST_PORT || 5055 : process.env.PORT || 5000)
 const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173'
@@ -18,6 +22,10 @@ const mongoUri = isTest ? process.env.MONGO_URI_TEST : process.env.MONGO_URI
 const corsOptions = {
     origin: clientUrl,
     credentials: true,
+}
+
+if (!process.env.JWT_SECRET) {
+    throw new Error('Missing JWT_SECRET in server/.env')
 }
 
 if (!mongoUri) {

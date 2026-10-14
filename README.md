@@ -61,3 +61,20 @@ All routes except `/health`, `/users/register` and `/users/login` need the login
 | GET | `/projects/:id/scenarios` | List saved scenarios |
 | GET | `/scenarios/:id/run` | Run a saved scenario |
 | DELETE | `/scenarios/:id` | Delete a scenario |
+
+
+## Deployment
+
+The server runs on Render, the client on Vercel, and the data lives in MongoDB Atlas.
+
+1. **Atlas:** create a database user, and under Network Access allow `0.0.0.0/0` so the hosted server can connect. Copy the connection string and add a database name such as `ripple_live` before the `?`.
+2. **Render (server):** create a Web Service from this repository with these settings.
+   - Root directory: `server`
+   - Build command: `npm install`
+   - Start command: `npm start`
+   - Health check path: `/health`
+   - Environment variables: `MONGO_URI`, `JWT_SECRET` (a new long random string), `NODE_ENV=production`, `NODE_VERSION=22`, and `CLIENT_URL` (the Vercel address, added in step 4).
+3. **Vercel (client):** import this repository with root directory `client` and framework Vite. Add the variable `VITE_API_URL` set to the Render address, with no trailing slash, and deploy.
+4. **Connect them:** set `CLIENT_URL` on Render to the final Vercel address and redeploy the server.
+
+The login cookie is `HttpOnly`, and in production it is `Secure` with `SameSite=None`, so the client and server can sit on different domains. Browsers that block third-party cookies may stop the login from working on the live site.
